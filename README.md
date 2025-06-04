@@ -63,3 +63,67 @@ Built with performance, maintainability, and scalability in mind, this applicati
   - Uses JPA annotations for entity mapping.
   - Reduces boilerplate code using Lombok (`@Data`, `@NoArgsConstructor`, etc.).
 
+---
+## Core Functionalities (REST APIs) 🔐 
+
+Below are the REST endpoints provided by the Library Management System, categorized by controller:
+
+---
+
+### Student Controller (`/students`) 👨‍🎓 
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/addStudent` | Add a new student (automatically creates a library card). |
+| `PUT`  | `/updateStudent` | Update an existing student's information. |
+| `DELETE` | `/deleteStudent?id={id}` | Delete a student by ID. |
+| `GET`  | `/getAll` | Retrieve a list of all students. |
+| `GET`  | `/getStudent/{id}` | Retrieve a student by their ID. |
+
+---
+
+### Book Controller (`/Books`) 📚 
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/addBook` | Add a new book to the library. |
+| `GET`  | `/getBooks?genre=&available=&author=` | Retrieve books with optional filters: `genre`, `available` (true/false), and `author`. |
+| `PUT`  | `/updateBook` | Update an existing book's information. |
+| `DELETE` | `/deleteBook/{id}` | Delete a book by its ID. |
+| `GET`  | `/getBook/{id}` | Get detailed information of a book by ID. |
+
+---
+
+### Author Controller (`/authors`) ✍️ 
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/add` | Add a new author. |
+| `PUT`  | `/update` | Update an author's details. |
+| `DELETE` | `/delete/{id}` | Delete an author by ID. |
+| `GET`  | `/all` | Retrieve a list of all authors. |
+| `GET`  | `/{id}` | Get details of a specific author by ID. |
+
+---
+
+### Transaction Controller (`/transactions`) 🔄 
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/issue?cardId={cardId}&bookId={bookId}` | Issue a book to a student using their card ID. Returns a unique Transaction ID. |
+| `POST` | `/return?cardId={cardId}&bookId={bookId}` | Return a previously issued book. Calculates fine if applicable and returns Transaction ID. |
+
+
+> ⚠️ **Note:**  
+
+For issuing or returning a book, system will validate:
+- Whether the card is activated.
+- Whether the book is available (for issue).
+- Book already linked with card (for return).
+- Number of books issued under a card (should not exceed limit).
+- Fine amount based on predefined configuration.
+
+---
+
+
+
