@@ -1,4 +1,4 @@
-# Library Management System 📖📚🔥
+# Library Management System 🔥📖🌐
 
 Welcome to the **Library Management System** – a comprehensive backend application built using **Spring Boot**, designed to efficiently manage library operations in a college environment.
 
@@ -114,16 +114,24 @@ Below are the REST endpoints provided by the Library Management System, categori
 | `POST` | `/return?cardId={cardId}&bookId={bookId}` | Return a previously issued book. Calculates fine if applicable and returns Transaction ID. |
 
 
-> ⚠️ **Note:**  
+> **Note:**
+  For issuing or returning a book, system will validate:
 
-For issuing or returning a book, system will validate:
-- Whether the card is activated.
-- Whether the book is available (for issue).
-- Book already linked with card (for return).
-- Number of books issued under a card (should not exceed limit).
-- Fine amount based on predefined configuration.
+ > - Whether the card is activated.
+ > - Whether the book is available (for issue).
+ > - Book already linked with card (for return).
+ > - Number of books issued under a card (should not exceed limit).
+ > - Fine amount based on predefined configuration.
 
 ---
 
 
+## ⚠️ Project Flow Summary
 
+- **Student Management:** Add, update, delete, and view student details along with issuing a library card.
+- **Book & Author Management:** Perform CRUD operations on books and authors.
+- **Book Issuing:** Verify card status and book availability, then issue the book and log the transaction.
+- **Book Returning:** Validate return request, calculate any applicable fines, update book status, and record the return transaction.
+- **Transaction Tracking:** Maintain detailed records of all issue and return operations with unique transaction IDs for reference.
+
+All features are accessible via RESTful APIs for easy integration and automation.
