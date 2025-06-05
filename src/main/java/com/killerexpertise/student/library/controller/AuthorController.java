@@ -3,6 +3,7 @@ package com.killerexpertise.student.library.controller;
 import com.killerexpertise.student.library.model.Author;
 import com.killerexpertise.student.library.service.AuthorServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,34 +19,30 @@ public class AuthorController {
     @PostMapping("/add")
     public ResponseEntity<String> addAuthor(@RequestBody Author author) {
         authorServiceI.createAuthor(author);
-        return ResponseEntity.ok("Author added successfully.");
+        return new ResponseEntity<>("Author added successfully.", HttpStatus.OK);
     }
 
     @PutMapping("/update")
     public ResponseEntity<String> updateAuthor(@RequestBody Author author) {
         authorServiceI.updateAuthor(author);
-        return ResponseEntity.ok("Author updated successfully.");
+        return new ResponseEntity<>("Author updated successfully.", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteAuthor(@PathVariable int id) {
         authorServiceI.deleteAuthor(id);
-        return ResponseEntity.ok("Author deleted successfully.");
+        return new ResponseEntity<>("Author deleted successfully.", HttpStatus.OK);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Author>> getAllAuthors() {
         List<Author> authors = authorServiceI.getAllAuthors();
-        return ResponseEntity.ok(authors);
+        return new ResponseEntity<>(authors, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Author> getAuthorById(@PathVariable int id) {
         Author author = authorServiceI.getAuthorById(id);
-        if (author != null) {
-            return ResponseEntity.ok(author);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return new ResponseEntity<>(author, HttpStatus.OK);
     }
 }
