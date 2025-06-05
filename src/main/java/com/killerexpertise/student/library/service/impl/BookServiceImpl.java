@@ -3,11 +3,11 @@ package com.killerexpertise.student.library.service.impl;
 import com.killerexpertise.student.library.model.Book;
 import com.killerexpertise.student.library.repository.BookRepository;
 import com.killerexpertise.student.library.service.BookServiceI;
+import com.killerexpertise.student.library.exception.BookNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookServiceI {
@@ -22,12 +22,17 @@ public class BookServiceImpl implements BookServiceI {
 
     @Override
     public void updateBook(Book book) {
-        // Save acts as insert or update if ID exists
+        if (!bookRepository.existsById(book.getId())) {
+            throw new BookNotFoundException("Book with ID " + book.getId() + " not found for update.");
+        }
         bookRepository.save(book);
     }
 
     @Override
     public void deleteBook(int id) {
+        if (!bookRepository.existsById(id)) {
+            throw new BookNotFoundException("Book with ID " + id + " not found for deletion.");
+        }
         bookRepository.deleteById(id);
     }
 
@@ -46,7 +51,7 @@ public class BookServiceImpl implements BookServiceI {
 
     @Override
     public Book getBookById(int id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        return optionalBook.orElse(null);
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found."));
     }
 }
