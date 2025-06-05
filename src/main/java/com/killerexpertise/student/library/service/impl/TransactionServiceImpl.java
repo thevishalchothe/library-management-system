@@ -1,5 +1,8 @@
 package com.killerexpertise.student.library.service.impl;
 
+import com.killerexpertise.student.library.exception.BookUnavailableException;
+import com.killerexpertise.student.library.exception.CardInvalidException;
+import com.killerexpertise.student.library.exception.TransactionNotFoundException;
 import com.killerexpertise.student.library.model.*;
 import com.killerexpertise.student.library.repository.BookRepository;
 import com.killerexpertise.student.library.repository.CardRepository;
@@ -35,26 +38,27 @@ public class TransactionServiceImpl implements TransactionServiceI {
     private int finePerDay;
 
     @Override
-    public String issueBooks(int cardId, int bookId) throws Exception {
-        Book book = bookRepository.findById(bookId).orElse(null);
-        if (book == null || !book.isAvailable()) {
-            throw new Exception("Book is either unavailable or not present!!");
+    public String issueBooks(int cardId, int bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookUnavailableException("Book with ID " + bookId + " is not available or doesn't exist."));
+        if (!book.isAvailable()) {
+            throw new BookUnavailableException("Book with ID " + bookId + " is already issued.");
         }
 
-        Card card = cardRepository.findById(cardId).orElse(null);
-        if (card == null || card.getCardStatus() == CardStatus.DEACTIVATED) {
-            throw new Exception("Card is invalid!!");
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CardInvalidException("Card with ID " + cardId + " does not exist."));
+        if (card.getCardStatus() == CardStatus.DEACTIVATED) {
+            throw new CardInvalidException("Card with ID " + cardId + " is deactivated.");
         }
 
         if (card.getBooks().size() >= maxAllowedBooks) {
-            throw new Exception("Book limit reached for this card!!");
+            throw new CardInvalidException("Card with ID " + cardId + " has reached the book limit.");
         }
 
         book.setAvailable(false);
         book.setCard(card);
         card.getBooks().add(book);
-
-        bookRepository.save(book); // no need for custom update method
+        bookRepository.save(book);
 
         Transaction transaction = new Transaction();
         transaction.setCard(card);
@@ -68,22 +72,20 @@ public class TransactionServiceImpl implements TransactionServiceI {
     }
 
     @Override
-    public String returnBooks(int cardId, int bookId) throws Exception {
+    public String returnBooks(int cardId, int bookId) {
         List<Transaction> transactions = transactionRepository.findAll().stream()
-                .filter(txn ->
-                        txn.getCard().getId() == cardId &&
-                                txn.getBook().getId() == bookId &&
-                                txn.getTransactionStatus() == TransactionStatus.SUCCESSFUL &&
-                                txn.getIsIssueOperation()
-                ).toList();
+                .filter(txn -> txn.getCard().getId() == cardId &&
+                        txn.getBook().getId() == bookId &&
+                        txn.getTransactionStatus() == TransactionStatus.SUCCESSFUL &&
+                        txn.getIsIssueOperation())
+                .toList();
 
         if (transactions.isEmpty()) {
-            throw new Exception("No previous successful issue transaction found for this card and book.");
+            throw new TransactionNotFoundException("No valid issue transaction found for card ID " + cardId + " and book ID " + bookId);
         }
 
         Transaction lastIssueTransaction = transactions.get(transactions.size() - 1);
         Date issueDate = lastIssueTransaction.getTransactionDate();
-
         long issueTime = Math.abs(issueDate.getTime() - System.currentTimeMillis());
         long daysPassed = TimeUnit.DAYS.convert(issueTime, TimeUnit.MILLISECONDS);
 

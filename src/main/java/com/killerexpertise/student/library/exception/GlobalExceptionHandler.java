@@ -45,6 +45,31 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(BookUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handleBookUnavailable(BookUnavailableException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, "Book Unavailable");
+    }
+
+    @ExceptionHandler(CardInvalidException.class)
+    public ResponseEntity<Map<String, Object>> handleCardInvalid(CardInvalidException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, "Card Invalid");
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleTransactionNotFound(TransactionNotFoundException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, "Transaction Not Found");
+    }
+
+    // Utility method
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(String message, HttpStatus status, String errorType) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("message", message);
+        error.put("status", status.value());
+        error.put("error", errorType);
+        return new ResponseEntity<>(error, status);
+    }
+
     // Optional: handle other generic exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex) {
