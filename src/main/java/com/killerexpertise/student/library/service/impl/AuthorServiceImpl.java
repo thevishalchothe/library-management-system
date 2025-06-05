@@ -3,11 +3,11 @@ package com.killerexpertise.student.library.service.impl;
 import com.killerexpertise.student.library.model.Author;
 import com.killerexpertise.student.library.repository.AuthorRepository;
 import com.killerexpertise.student.library.service.AuthorServiceI;
+import com.killerexpertise.student.library.exception.AuthorNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthorServiceImpl implements AuthorServiceI {
@@ -22,12 +22,17 @@ public class AuthorServiceImpl implements AuthorServiceI {
 
     @Override
     public void updateAuthor(Author author) {
-        // Save acts as update if ID is present
+        if (!authorRepository.existsById(author.getId())) {
+            throw new AuthorNotFoundException("Author with ID " + author.getId() + " not found for update.");
+        }
         authorRepository.save(author);
     }
 
     @Override
     public void deleteAuthor(int id) {
+        if (!authorRepository.existsById(id)) {
+            throw new AuthorNotFoundException("Author with ID " + id + " not found for deletion.");
+        }
         authorRepository.deleteById(id);
     }
 
@@ -38,7 +43,7 @@ public class AuthorServiceImpl implements AuthorServiceI {
 
     @Override
     public Author getAuthorById(int id) {
-        Optional<Author> optionalAuthor = authorRepository.findById(id);
-        return optionalAuthor.orElse(null);
+        return authorRepository.findById(id)
+                .orElseThrow(() -> new AuthorNotFoundException("Author with ID " + id + " not found."));
     }
 }
