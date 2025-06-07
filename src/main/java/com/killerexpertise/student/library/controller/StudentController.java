@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
     @Autowired
@@ -20,18 +20,6 @@ public class StudentController {
     public ResponseEntity<String> addStudent(@RequestBody Student student) {
         studentServiceI.createStudent(student);
         return new ResponseEntity<>("Student added.", HttpStatus.OK);
-    }
-
-    @PutMapping("/updateStudent")
-    public ResponseEntity<String> updateStudent(@RequestBody Student student) {
-        studentServiceI.updateStudent(student);
-        return new ResponseEntity<>("Student updated.", HttpStatus.OK);
-    }
-
-    @DeleteMapping("/deleteStudent")
-    public ResponseEntity<String> deleteStudent(@RequestParam int id) {
-        studentServiceI.deleteStudent(id);
-        return new ResponseEntity<>("Student deleted.", HttpStatus.OK);
     }
 
     @GetMapping("/getAll")
@@ -44,5 +32,17 @@ public class StudentController {
     public ResponseEntity<Student> getStudentById(@PathVariable int id) {
         Student student = studentServiceI.getStudentById(id);
         return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+
+    @PutMapping("/updateStudent")
+    public ResponseEntity<String> updateStudent(@RequestBody Student student) {
+        studentServiceI.updateStudent(student);
+        return new ResponseEntity<>("Student updated.", HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteStudent")
+    public ResponseEntity<String> deleteStudent(@RequestParam int id) {
+        studentServiceI.deleteStudent(id);
+        return new ResponseEntity<>("Student deleted.", HttpStatus.OK);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Books")
+@RequestMapping("/api/books")
 public class BookController {
 
     @Autowired
@@ -30,6 +30,12 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
+    @GetMapping("/getBook/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable int id) {
+        Book book = bookServiceI.getBookById(id);
+        return new ResponseEntity<>(book, HttpStatus.OK);
+    }
+
     @PutMapping("/updateBook")
     public ResponseEntity<String> updateBook(@RequestBody Book book) {
         bookServiceI.updateBook(book);
@@ -42,9 +48,4 @@ public class BookController {
         return new ResponseEntity<>("Book deleted", HttpStatus.OK);
     }
 
-    @GetMapping("/getBook/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable int id) {
-        Book book = bookServiceI.getBookById(id);
-        return new ResponseEntity<>(book, HttpStatus.OK);
-    }
 }
